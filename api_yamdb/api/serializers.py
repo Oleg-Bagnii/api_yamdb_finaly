@@ -1,10 +1,9 @@
 from api.validators import username_validator
 from django.conf import settings
-from rest_framework.fields import CharField, EmailField
+from rest_framework.fields import CharField, EmailField, SerializerMethodField
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from api import serializers
-from reviews.models import Review, Comment
+from reviews.models import Review, Comment, Title, Genre, Category
 from users.models import User
 
 
@@ -53,10 +52,6 @@ class TokenSerializer(Serializer):
 
 
 class ReviewSerializer(ModelSerializer):
-    author = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username')
-
     class Meta:
         model = Review
         fields = '__all__'
@@ -64,11 +59,36 @@ class ReviewSerializer(ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
-    author = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username')
-
     class Meta:
         model = Comment
         fields = '__all__'
         read_only_fields = ('review',)
+
+
+class CategorySerializer(ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+
+class GenreSerializer(ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = '__all__'
+
+
+class TitleSerializer(ModelSerializer):
+    category = CategorySerializer()
+    genre = GenreSerializer(many=True)
+    rating = SerializerMethodField()
+
+    class Meta:
+        model = Title
+        fields = ('id', 'name', 'rating', 'description', 'genre', 'category',)
+
+    def get_rating(self, request, obj):
+        reviews = Review.objects.filter(product=request.product)
+        rating = 0
+        for review in reviews:
+            rating = rating + review.score
+        return rating / len(reviews)

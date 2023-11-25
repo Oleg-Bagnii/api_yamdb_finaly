@@ -66,7 +66,6 @@ class Title(models.Model):
     genre = models.ManyToManyField(
         Genre,
         verbose_name='Жанр',
-        on_delete=models.SET_NULL,
         through='GenreTitle'
     )
     category = models.ForeignKey(
@@ -116,7 +115,9 @@ class Review(models.Model):
     product = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='reviews'
     )
-    score = models.IntegerField(max_length=10, min_length=1)
+    score = models.IntegerField(default=0,
+                                validators=[MaxValueValidator(10),
+                                            MinValueValidator(1)])
 
     def __str__(self):
         return self.text
