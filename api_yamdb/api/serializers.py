@@ -1,8 +1,10 @@
+from api.validators import username_validator
 from django.conf import settings
 from rest_framework.fields import CharField, EmailField
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from api.validators import username_validator
+from api import serializers
+from reviews.models import Review, Comment
 from users.models import User
 
 
@@ -48,3 +50,25 @@ class TokenSerializer(Serializer):
 
     def validate_username(self, value):
         return username_validator(value)
+
+
+class ReviewSerializer(ModelSerializer):
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username')
+
+    class Meta:
+        model = Review
+        fields = '__all__'
+        read_only_fields = ('product',)
+
+
+class CommentSerializer(ModelSerializer):
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username')
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+        read_only_fields = ('review',)
