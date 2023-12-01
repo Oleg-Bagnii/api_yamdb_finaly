@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.filters import SearchFilter
 
 from api.permissions import IsAdmin
 from api.serializers import (SignupSerializer, TokenSerializer,
@@ -18,11 +19,15 @@ from .models import User
 
 
 class UserViewSet(ModelViewSet):
-    lookup_field = "username"
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = PageNumberPagination
     permission_classes = (IsAdmin,)
+    filter_backends = (SearchFilter,)
+    http_method_names = ('delete', 'get', 'patch', 'post')
+    filterset_fields = ('username')
+    search_fields = ('username',)
+    lookup_field = 'username'
 
     @action(
         methods=["get", "patch"],
