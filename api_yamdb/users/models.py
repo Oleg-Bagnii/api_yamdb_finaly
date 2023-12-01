@@ -1,8 +1,7 @@
+from api.validators import username_validator
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
-from api.validators import username_validator
 
 
 class User(AbstractUser):
@@ -44,6 +43,10 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         return self.role == self.ADMIN or self.is_superuser or self.is_staff
+
+    @property
+    def is_user(self):
+        return self.role == self.USER
 
     class Meta:
         verbose_name = "Пользователь"
