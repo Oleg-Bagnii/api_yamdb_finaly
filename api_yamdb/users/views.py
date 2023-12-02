@@ -4,18 +4,18 @@ from django.core.mail import send_mail
 from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.decorators import action, api_view
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework.filters import SearchFilter
 
+from .models import User
 from api.permissions import IsAdmin
 from api.serializers import (SignupSerializer, TokenSerializer,
                              UserEditSerializer, UserSerializer)
-from .models import User
 
 
 class UserViewSet(ModelViewSet):

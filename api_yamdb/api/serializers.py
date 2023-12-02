@@ -1,12 +1,12 @@
-from api.validators import username_validator
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from rest_framework.fields import CharField, EmailField
 from rest_framework import serializers
+from rest_framework.fields import CharField, EmailField
 from rest_framework.serializers import (ModelSerializer, Serializer,
                                         SlugRelatedField)
 
-from reviews.models import Review, Comment, Title, Genre, Category
+from api.validators import username_validator
+from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import User
 
 
