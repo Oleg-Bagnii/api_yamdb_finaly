@@ -12,10 +12,10 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
 
-from .models import User
-from api.permissions import IsAdmin
-from api.serializers import (SignupSerializer, TokenSerializer,
-                             UserEditSerializer, UserSerializer)
+from users.models import User
+from api.v1.permissions import IsAdmin
+from api.v1.serializers import (SignupSerializer, TokenSerializer,
+                                UserEditSerializer, UserSerializer)
 
 
 class UserViewSet(ModelViewSet):
@@ -30,15 +30,15 @@ class UserViewSet(ModelViewSet):
     lookup_field = 'username'
 
     @action(
-        methods=["get", "patch"],
+        methods=['get', 'patch'],
         detail=False,
-        url_path="me",
+        url_path='me',
         permission_classes=(IsAuthenticated,),
         serializer_class=UserEditSerializer,
     )
     def users_own_profile(self, request):
         user = request.user
-        if request.method == "PATCH":
+        if request.method == 'PATCH':
             serializer = self.get_serializer(
                 user, data=request.data, partial=True
             )
@@ -49,15 +49,15 @@ class UserViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@api_view(["POST"])
+@api_view(['POST'])
 def signup(request):
-    LOGIN_ERROR = "Это имя пользователя уже занято!"
-    EMAIL_ERROR = "Эта электронная почта уже занята!"
+    LOGIN_ERROR = 'Это имя пользователя уже занято!'
+    EMAIL_ERROR = 'Эта электронная почта уже занята!'
     serializer = SignupSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     try:
-        username = serializer.validated_data.get("username")
-        email = serializer.validated_data.get("email")
+        username = serializer.validated_data.get('username')
+        email = serializer.validated_data.get('email')
         user, _ = User.objects.get_or_create(username=username, email=email)
     except IntegrityError:
         real_error = (
@@ -69,24 +69,24 @@ def signup(request):
 
     confirmation_code = default_token_generator.make_token(user)
     send_mail(
-        subject="Регистрация в yamdb",
-        message=f"Проверочный код: {confirmation_code}",
+        subject='Регистрация в yamdb',
+        message=f'Проверочный код: {confirmation_code}',
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[user.email],
     )
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@api_view(["POST"])
+@api_view(['POST'])
 def get_token(request):
     serializer = TokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     user = get_object_or_404(
-        User, username=serializer.validated_data.get("username")
+        User, username=serializer.validated_data.get('username')
     )
     if default_token_generator.check_token(
-        user, serializer.validated_data.get("confirmation_code")
+        user, serializer.validated_data.get('confirmation_code')
     ):
         token = AccessToken.for_user(user)
-        return Response({"token": str(token)}, status=status.HTTP_200_OK)
+        return Response({'token': str(token)}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

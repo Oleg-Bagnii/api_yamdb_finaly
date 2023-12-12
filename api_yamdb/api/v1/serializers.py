@@ -1,5 +1,6 @@
-from api.validators import username_validator
+from api.v1.validators import username_validator
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.fields import CharField, EmailField
@@ -7,7 +8,9 @@ from rest_framework.serializers import (ModelSerializer, Serializer,
                                         SlugRelatedField)
 
 from reviews.models import Category, Comment, Genre, Review, Title
-from users.models import User
+
+
+User = get_user_model()
 
 
 class UserSerializer(ModelSerializer):
@@ -67,14 +70,15 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if self.context.get('request').method != 'POST':
-            title_id = self.context['view'].kwargs.get('title_id')
-            author = self.context.get('request').user
-            title = get_object_or_404(Title, id=title_id)
-            if self.context.get('request').method != 'PATCH':
-                if title.reviews.filter(author=author).exists():
-                    raise serializers.ValidationError(
-                        'Ваш отзыв уже есть.'
-                    )
+            return data
+        title_id = self.context['view'].kwargs.get('title_id')
+        author = self.context.get('request').user
+        title = get_object_or_404(Title, id=title_id)
+        if self.context.get('request').method != 'PATCH':
+            if title.reviews.filter(author=author).exists():
+                raise serializers.ValidationError(
+                    'Ваш отзыв уже есть.'
+                )
         return data
 
 
@@ -125,11 +129,13 @@ class TitleSerializer(ModelSerializer):
         required=False,
         slug_field='slug')
     rating = serializers.IntegerField(
+        required=False,
         default=None,
-        required=False
+        read_only=True
     )
 
     class Meta:
         model = Title
         fields = (
             'id', 'name', 'year', 'rating', 'description', 'genre', 'category')
+

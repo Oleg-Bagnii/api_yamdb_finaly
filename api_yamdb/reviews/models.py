@@ -1,13 +1,16 @@
 from datetime import datetime
 
+from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from acme_project import settings
-from users.models import User
+from django.conf import settings
 
 
-class Category(models.Model):
+User = get_user_model()
+
+
+class CategoryGenreAbstract(models.Model):
     name = models.CharField(
         verbose_name='Название',
         max_length=settings.NAME_MAX_LENGTH
@@ -22,12 +25,18 @@ class Category(models.Model):
         return self.name
 
     class Meta:
+        ordering = ('name',)
+        abstract = True
+
+
+class Category(CategoryGenreAbstract):
+
+    class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
-        ordering = ('name',)
 
 
-class Genre(Category):
+class Genre(CategoryGenreAbstract):
 
     class Meta:
         verbose_name = 'Жанр'
@@ -41,10 +50,11 @@ class Title(models.Model):
     )
     year = models.IntegerField(
         verbose_name='Дата выхода',
-        validators=MaxValueValidator(datetime.now().year)
+        validators=[MaxValueValidator(datetime.now().year)]
     )
     description = models.TextField('Описание', blank=True)
-    genre = models.ManyToManyField(Genre, through_fields='GenreTitle')
+    genre = models.ManyToManyField(Genre, through='GenreTitle',
+                                   through_fields=('title', 'genre'),)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL,
                                  related_name='categories', null=True)
 
@@ -81,7 +91,7 @@ class Review(models.Model):
         'Дата публикации', auto_now_add=True
     )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='reviews'
+        User, on_delete=models.CASCADE, related_name='author_reviews'
     )
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='reviews'
@@ -97,8 +107,9 @@ class Review(models.Model):
         ordering = ('-pub_date',)
         constraints = [
             models.UniqueConstraint(
+                name='unique_review',
                 fields=['title', 'author'],
-                name='unique_review'),
+            )
         ]
 
 
