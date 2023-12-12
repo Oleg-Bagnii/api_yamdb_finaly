@@ -138,4 +138,3 @@ class TitleSerializer(ModelSerializer):
         model = Title
         fields = (
             'id', 'name', 'year', 'rating', 'description', 'genre', 'category')
-
