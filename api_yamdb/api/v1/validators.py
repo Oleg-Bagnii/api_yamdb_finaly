@@ -10,6 +10,6 @@ def validator(value):
         raise ValidationError('Имя пользователя "me" нельзя использовать.')
     elif not result:
         raise ValidationError(
-                f'Имя пользователя не должно содержать {result}'
-            )
+            f'Имя пользователя не должно содержать {result}'
+        )
     return value

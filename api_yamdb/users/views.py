@@ -55,7 +55,7 @@ def signup(request):
     username = serializer.validated_data.get('username')
     email = serializer.validated_data.get('email')
     try:
-        user = User.objects.get_or_create(username=username, email=email)
+        User.objects.get_or_create(username=username, email=email)
     except IntegrityError:
         return Response(status=status.HTTP_400_BAD_REQUEST)
     confirmation_code = serializer.validated_data.get('username')
@@ -71,8 +71,10 @@ def signup(request):
 def get_token(request):
     serializer = TokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    user = get_object_or_404(User,
-                             username=serializer.validated_data.get('username'))
+    user = get_object_or_404(
+        User,
+        username=serializer.validated_data.get('username')
+    )
     if not user.check_password(serializer.validated_data.get('password')):
         return Response(status=status.HTTP_400_BAD_REQUEST)
     token = AccessToken.for_user(user)
