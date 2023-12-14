@@ -1,6 +1,3 @@
-from api.validators import username_validator
-from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework.fields import CharField, EmailField
 from rest_framework import serializers
@@ -9,50 +6,37 @@ from rest_framework.serializers import (ModelSerializer, Serializer,
 
 from reviews.models import Review, Comment, Title, Genre, Category
 from users.models import User
+from api.validators import validator
 
 
 class UserSerializer(ModelSerializer):
     class Meta:
-        fields = (
-            "username",
-            "email",
-            "first_name",
-            "last_name",
-            "bio",
-            "role",
-        )
+        fields = ('username', 'email', 'first_name', 'last_name', 'bio',
+                  'role')
         model = User
-
-    def validate_username(self, value):
-        return username_validator(value)
 
 
 class UserEditSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
-        read_only_fields = ("role",)
+        read_only_fields = ('role',)
 
 
-class SignupSerializer(Serializer):
+class SignUpSerializer(Serializer):
     username = CharField(
-        max_length=settings.LIMIT_USERNAME,
+        max_length=150,
         required=True,
-        validators=(username_validator,),
+        validators=(validator,),
     )
-    email = EmailField(max_length=settings.LIMIT_EMAIL, required=True)
+    email = EmailField(max_length=254, required=True)
 
 
 class TokenSerializer(Serializer):
     username = CharField(
-        max_length=settings.LIMIT_USERNAME,
+        max_length=150,
         required=True,
-        validators=(username_validator,),
+        validators=(validator,),
     )
-    confirmation_code = CharField(
-        max_length=settings.LIMIT_CODE, required=True
-    )
-
-    def validate_username(self, value):
-        return username_validator(value)
+    confirmation_code = CharField(required=True)
 
 
 class ReviewSerializer(serializers.ModelSerializer):
