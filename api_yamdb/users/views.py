@@ -11,9 +11,9 @@ from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework_simplejwt.tokens import AccessToken
 
-from api.permissions import IsAdminAndAuthenticated
-from api.serializers import (SignUpSerializer, TokenSerializer,
-                             UserEditSerializer, UserSerializer)
+from api.v1.permissions import IsAdminAndAuthenticated
+from api.v1.serializers import (SignUpSerializer, TokenSerializer,
+                                UserEditSerializer, UserSerializer)
 from .models import User
 
 

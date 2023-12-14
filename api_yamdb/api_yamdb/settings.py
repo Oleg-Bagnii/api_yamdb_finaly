@@ -106,7 +106,7 @@ SIMPLE_JWT = {
 
 # Internationalization
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'UTC'
 
@@ -124,9 +124,11 @@ STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
 
 AUTH_USER_MODEL = 'users.User'
 
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
-DEFAULT_FROM_EMAIL = "admin@yamdb.com"
+DEFAULT_FROM_EMAIL = 'admin@yamdb.com'
+
+EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
 
 OUTPUT_LENGTH = 30
 
@@ -135,3 +137,7 @@ LIMIT_USERNAME = 150
 LIMIT_EMAIL = 254
 
 LIMIT_CODE = 150
+
+NAME_MAX_LENGTH = 256
+
+SLUG_MAX_LENGTH = 50

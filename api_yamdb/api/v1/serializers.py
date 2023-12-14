@@ -6,7 +6,7 @@ from rest_framework.serializers import (ModelSerializer, Serializer,
 
 from reviews.models import Review, Comment, Title, Genre, Category
 from users.models import User
-from api.validators import validator
+from api.v1.validators import validator
 
 
 class UserSerializer(ModelSerializer):
@@ -45,22 +45,14 @@ class ReviewSerializer(serializers.ModelSerializer):
         slug_field='username',
         default=serializers.CurrentUserDefault()
     )
-    pub_date = serializers.DateTimeField(
-        read_only=True,
-    )
 
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date')
         model = Review
 
-    def validate_score(self, value):
-        if value not in range(1, 11):
-            raise serializers.ValidationError(
-                'Оцените цифрой от 1 до 10'
-            )
-        return value
-
-    def validate(self, obj):
+    def validate(self, data):
+        if self.context.get('request').method != 'POST':
+            return data
         title_id = self.context['view'].kwargs.get('title_id')
         author = self.context.get('request').user
         title = get_object_or_404(Title, id=title_id)
@@ -69,7 +61,7 @@ class ReviewSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'Ваш отзыв уже есть.'
                 )
-        return obj
+        return data
 
 
 class CommentSerializer(ModelSerializer):
@@ -111,14 +103,18 @@ class TitleSerializer(ModelSerializer):
     category = CategoryField(
         queryset=Category.objects.all(),
         required=False,
-        slug_field='slug')
+        slug_field='slug'
+    )
     genre = GenreField(
         many=True,
         queryset=Genre.objects.all(),
         required=False,
         slug_field='slug')
     rating = serializers.IntegerField(
-        required=False)
+        required=False,
+        default=None,
+        read_only=True
+    )
 
     class Meta:
         model = Title
