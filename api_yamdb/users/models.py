@@ -4,6 +4,9 @@ from django.db import models
 from api.v1.validators import validator
 
 
+MAX_LENGTH = 150
+
+
 class User(AbstractUser):
     ADMIN = 'admin'
     MODERATOR = 'moderator'
@@ -15,23 +18,22 @@ class User(AbstractUser):
         )
     username = models.CharField(
         'Имя пользователя',
-        max_length=150,
+        max_length=MAX_LENGTH,
         unique=True,
         validators=(validator,),
         )
     email = models.EmailField(
         'Электронная почта',
-        max_length=254,
         unique=True
         )
     first_name = models.CharField(
         'Имя',
-        max_length=150,
+        max_length=MAX_LENGTH,
         blank=True
         )
     last_name = models.CharField(
         'Фамилия',
-        max_length=150,
+        max_length=MAX_LENGTH,
         blank=True
         )
     bio = models.TextField(
@@ -40,10 +42,18 @@ class User(AbstractUser):
         )
     role = models.CharField(
         'Роль',
-        max_length=20,
+        max_length=30,
         choices=CHOICES,
         default=USER,
         )
+
+    @property
+    def is_admin(self):
+        return self.role == self.ADMIN or self.is_superuser or self.is_staff
+
+    @property
+    def is_moderator(self):
+        return self.role == self.MODERATOR
 
     class Meta:
         verbose_name = 'Пользователь'

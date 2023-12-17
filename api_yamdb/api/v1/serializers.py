@@ -1,8 +1,10 @@
+from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from rest_framework.fields import CharField, EmailField
 from rest_framework import serializers
 from rest_framework.serializers import (ModelSerializer, Serializer,
                                         SlugRelatedField)
+from django.core.exceptions import ValidationError
 
 from reviews.models import Review, Comment, Title, Genre, Category
 from users.models import User
@@ -27,7 +29,28 @@ class SignUpSerializer(Serializer):
         required=True,
         validators=(validator,),
     )
-    email = EmailField(max_length=254, required=True)
+    email = EmailField(
+        max_length=254,
+        required=True,
+        )
+
+    def validate(self, data):
+        email = User.objects.filter(email=data.get('email')).first()
+        username = User.objects.filter(username=data.get('username')).first()
+        if email != username:
+            raise ValidationError('Ошибка')
+        return data
+
+    def create(self, validated_data):
+        user, created = User.objects.get_or_create(**validated_data)
+        user.email_user(
+            subject='confirmation_code',
+            message=default_token_generator.make_token(user),
+        )
+        return {
+            'email': user.email,
+            'username': user.username,
+        }
 
 
 class TokenSerializer(Serializer):

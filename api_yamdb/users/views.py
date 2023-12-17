@@ -1,6 +1,4 @@
-from django.conf import settings
-from django.core.mail import send_mail
-from django.db import IntegrityError
+from django.contrib.auth.tokens import default_token_generator
 from rest_framework import status
 from rest_framework.decorators import action, api_view
 from rest_framework.pagination import PageNumberPagination
@@ -51,29 +49,24 @@ class UserViewSet(ModelViewSet):
 @api_view(['POST'])
 def signup(request):
     serializer = SignUpSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data.get('username')
-    email = serializer.validated_data.get('email')
-    try:
-        user = User.objects.get_or_create(username=username, email=email)
-    except IntegrityError:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-    confirmation_code = serializer.validated_data.get('username')
-    send_mail('Регистрация',
-              f'confirmation_code - {confirmation_code}',
-              settings.DEFAULT_FROM_EMAIL,
-              [serializer.validated_data.get('email')]
-              )
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    mesage = {'details': 'Данные невалидны'}
+    return Response(mesage, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
 def get_token(request):
     serializer = TokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    user = get_object_or_404(User,
-                             username=serializer.validated_data.get('username'))
-    if not user.check_password(serializer.validated_data.get('password')):
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    user = get_object_or_404(
+        User,
+        username=serializer.validated_data.get('username')
+    )
+    confirmation_code = serializer.validated_data.get('confirmation_code')
+    if not default_token_generator.check_token(user, confirmation_code):
+        mesage = {'confirmation_code': 'Невалиден код подтверждения'}
+        return Response(mesage, status=status.HTTP_400_BAD_REQUEST)
     token = AccessToken.for_user(user)
-    return Response({'token': token.key, 'user': serializer.data})
+    return Response({'token': str(token)})
