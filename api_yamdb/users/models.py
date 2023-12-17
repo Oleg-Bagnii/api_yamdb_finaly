@@ -15,37 +15,37 @@ class User(AbstractUser):
         (USER, 'Пользователь'),
         (MODERATOR, 'Модератор'),
         (ADMIN, 'Администратор'),
-        )
+    )
     username = models.CharField(
         'Имя пользователя',
         max_length=MAX_LENGTH,
         unique=True,
         validators=(validator,),
-        )
+    )
     email = models.EmailField(
         'Электронная почта',
         unique=True
-        )
+    )
     first_name = models.CharField(
         'Имя',
         max_length=MAX_LENGTH,
         blank=True
-        )
+    )
     last_name = models.CharField(
         'Фамилия',
         max_length=MAX_LENGTH,
         blank=True
-        )
+    )
     bio = models.TextField(
         'Биография',
         blank=True
-        )
+    )
     role = models.CharField(
         'Роль',
         max_length=30,
         choices=CHOICES,
         default=USER,
-        )
+    )
 
     @property
     def is_admin(self):
