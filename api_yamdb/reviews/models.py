@@ -1,11 +1,9 @@
-from datetime import datetime
-
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from django.conf import settings
-
+from reviews.validators import validate_year
 
 User = get_user_model()
 
@@ -31,14 +29,14 @@ class CategoryGenreAbstract(models.Model):
 
 class Category(CategoryGenreAbstract):
 
-    class Meta:
+    class Meta(CategoryGenreAbstract.Meta):
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
 
 class Genre(CategoryGenreAbstract):
 
-    class Meta:
+    class Meta(CategoryGenreAbstract.Meta):
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
 
@@ -48,9 +46,9 @@ class Title(models.Model):
         verbose_name='Название',
         max_length=settings.NAME_MAX_LENGTH
     )
-    year = models.IntegerField(
+    year = models.SmallIntegerField(
         verbose_name='Дата выхода',
-        validators=[MaxValueValidator(datetime.now().year)]
+        validators=[validate_year]
     )
     description = models.TextField('Описание', blank=True)
     genre = models.ManyToManyField(Genre, through='GenreTitle',
@@ -96,7 +94,7 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='reviews'
     )
-    score = models.IntegerField(
+    score = models.SmallIntegerField(
         validators=[MaxValueValidator(10), MinValueValidator(1)]
     )
 

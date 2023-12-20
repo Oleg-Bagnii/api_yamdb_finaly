@@ -1,14 +1,14 @@
 from django.contrib.auth.tokens import default_token_generator
+from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-from rest_framework.fields import CharField, EmailField
 from rest_framework import serializers
+from rest_framework.fields import CharField, EmailField
 from rest_framework.serializers import (ModelSerializer, Serializer,
                                         SlugRelatedField)
-from django.core.exceptions import ValidationError
 
-from reviews.models import Review, Comment, Title, Genre, Category
-from users.models import User
 from api.v1.validators import validator
+from reviews.models import Category, Comment, Genre, Review, Title
+from users.models import User
 
 
 class UserSerializer(ModelSerializer):

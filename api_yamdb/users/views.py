@@ -1,18 +1,18 @@
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework import status
 from rest_framework.decorators import action, api_view
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.filters import SearchFilter
-from rest_framework.generics import get_object_or_404
 from rest_framework_simplejwt.tokens import AccessToken
 
+from .models import User
 from api.v1.permissions import IsAdminAndAuthenticated
 from api.v1.serializers import (SignUpSerializer, TokenSerializer,
                                 UserEditSerializer, UserSerializer)
-from .models import User
 
 
 class UserViewSet(ModelViewSet):

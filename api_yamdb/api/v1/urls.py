@@ -3,9 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from api.v1.views import (CategoryViewSet, CommentViewSet, GenreViewSet,
                           ReviewViewSet, TitleViewSet)
-from users.views import UserViewSet
-from users.views import get_token, signup
-
+from users.views import UserViewSet, get_token, signup
 
 router_v1 = DefaultRouter()
 router_v1.register('users', UserViewSet, basename='users')

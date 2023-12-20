@@ -3,7 +3,6 @@ from django.db import models
 
 from api.v1.validators import validator
 
-
 MAX_LENGTH = 150
 
 
