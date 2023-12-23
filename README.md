@@ -49,4 +49,17 @@ python3 manage.py migrate
 ```sh
 python3 manage.py runserver
 ```
+
+##### Как загрузить данные из csv-файлов в базу данных:
+
+Установить библиотеку pandas:
+```sh
+pip install pandas
+```
+Перейти в директорию 'C:/Dev/api_yamdb/api_yamdb/static/data' :
+```sh
+cd C:/Dev/api_yamdb/api_yamdb/static/data
+```
+Запустить файл 'load_data'
+
 ###### Авторы проекта [Лилия Тазетдинова](https://github.com/Lililand91), [Олег Багний](https://github.com/Oleg-Bagnii), [Дмитрий Сырбу](https://github.com/ACkukoDC)
