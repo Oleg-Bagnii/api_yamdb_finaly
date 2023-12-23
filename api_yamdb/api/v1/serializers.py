@@ -32,7 +32,7 @@ class SignUpSerializer(Serializer):
     email = EmailField(
         max_length=254,
         required=True,
-        )
+    )
 
     def validate(self, data):
         email = User.objects.filter(email=data.get('email')).first()
