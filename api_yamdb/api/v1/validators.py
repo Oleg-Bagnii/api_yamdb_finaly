@@ -4,12 +4,11 @@ from django.core.exceptions import ValidationError
 
 
 def validator(value):
-    pattern = r'^[\w.@+-]+\Z'
-    result = re.match(pattern, value)
+    result = re.sub(r'^[\w.@+-]+\Z', '', value)
     if value == 'me':
-        raise ValidationError('Имя пользователя "me" нельзя использовать.')
-    elif not result:
+        raise ValidationError('Имя пользователя "me" использовать нельзя!')
+    elif value in result:
         raise ValidationError(
-            f'Имя пользователя не должно содержать {pattern}'
+            f'Имя пользователя не должно содержать {result}'
         )
     return value

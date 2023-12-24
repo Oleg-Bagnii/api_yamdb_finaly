@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
@@ -8,7 +9,9 @@ from rest_framework.serializers import (ModelSerializer, Serializer,
 
 from api.v1.validators import validator
 from reviews.models import Category, Comment, Genre, Review, Title
-from users.models import User
+from users.models import MAX_LENGTH
+
+User = get_user_model()
 
 
 class UserSerializer(ModelSerializer):
@@ -25,7 +28,7 @@ class UserEditSerializer(UserSerializer):
 
 class SignUpSerializer(Serializer):
     username = CharField(
-        max_length=150,
+        max_length=MAX_LENGTH,
         required=True,
         validators=(validator,),
     )
@@ -38,7 +41,7 @@ class SignUpSerializer(Serializer):
         email = User.objects.filter(email=data.get('email')).first()
         username = User.objects.filter(username=data.get('username')).first()
         if email != username:
-            raise ValidationError('Ошибка')
+            raise ValidationError('Эти username или email уже заняты')
         return data
 
     def create(self, validated_data):
@@ -55,7 +58,7 @@ class SignUpSerializer(Serializer):
 
 class TokenSerializer(Serializer):
     username = CharField(
-        max_length=150,
+        max_length=MAX_LENGTH,
         required=True,
         validators=(validator,),
     )

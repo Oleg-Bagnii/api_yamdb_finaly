@@ -56,9 +56,9 @@ python3 manage.py runserver
 ```sh
 pip install pandas
 ```
-Перейти в директорию 'C:/Dev/api_yamdb/api_yamdb/static/data' :
+Перейти в директорию './api_yamdb/api_yamdb' :
 ```sh
-cd C:/Dev/api_yamdb/api_yamdb/static/data
+cd api_yamdb/api_yamdb
 ```
 Запустить файл 'load_data'
 

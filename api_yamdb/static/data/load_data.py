@@ -1,36 +1,37 @@
 import sqlite3
+
 import pandas as pd
 
-con = sqlite3.connect('C:/Dev/api_yamdb/api_yamdb/db.sqlite3')
+con = sqlite3.connect('./db.sqlite3')
 cursor = con.cursor()
 
-DATA_TABLE = [['category.csv',
+DATA_TABLE = [['./static/data/category.csv',
                'reviews_category',
               'INSERT INTO reviews_category (id, name, slug)'
                ' VALUES (?, ?, ?)'],
-              ['genre.csv',
+              ['./static/data/genre.csv',
                'reviews_genre',
               'INSERT INTO reviews_genre (id, name, slug)'
                ' VALUES (?, ?, ?)'],
-              ['titles.csv',
+              ['./static/data/titles.csv',
                'reviews_title',
               'INSERT INTO reviews_title (id, name, year, category)'
                ' VALUES (?, ?, ?, ?)'],
-              ['genre_title.csv',
+              ['./static/data/genre_title.csv',
                'reviews_genretitle',
               'INSERT INTO reviews_genretitle (id, genre_id, title_id)'
                ' VALUES (?, ?, ?)'],
-              ['comments.csv',
+              ['./static/data/comments.csv',
                'reviews_comment',
               'INSERT INTO reviews_comment '
                '(id, text, pub_date, author, review_id)'
                ' VALUES (?, ?, ?, ?, ?)'],
-              ['review.csv',
+              ['./static/data/review.csv',
                'reviews_review',
               'INSERT INTO reviews_review '
                '(id, text, pub_date, score, author, title_id)'
                ' VALUES (?, ?, ?, ?, ?, ?)'],
-              ['users.csv',
+              ['./static/data/users.csv',
                'users_user',
               'INSERT INTO users_user (id, username, email,'
                'first_name, last_name, bio, role)'
