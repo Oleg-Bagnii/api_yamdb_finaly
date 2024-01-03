@@ -58,7 +58,7 @@ pip install pandas
 ```
 Перейти в директорию './api_yamdb' :
 ```sh
-cd api_yamdb/api_yamdb
+cd api_yamdb
 ```
 Запустить файл 'load_data':
 ```sh
